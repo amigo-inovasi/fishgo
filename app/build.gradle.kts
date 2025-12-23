@@ -62,8 +62,8 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    // TensorFlow Lite - Object Detection
-    implementation(libs.tensorflow.lite.task.vision)
-    implementation(libs.tensorflow.lite.gpu.delegate.plugin)
+    // TensorFlow Lite - Core Interpreter for YOLOv8
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.support)
     implementation(libs.tensorflow.lite.gpu)
 }

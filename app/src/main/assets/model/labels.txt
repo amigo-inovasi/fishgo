@@ -1,19 +1,19 @@
-Alepes Djedaba (Ikan Selar Bulat)
-Atropus Atropos (Ikan Cipa-Cipa)
-Caranx Ignobilis (Ikan Kuwe)
-Chanos Chanos (Ikan Bandeng)
-Decapterus Macarellus (Ikan Malalugis)
-Euthynnus Affinis (Ikan Bonito Tuna)
-Katsuwonus Pelamis (Ikan Cakalang)
-Lutjanus Malabaricus (Ikan Kakap Merah)
-Parastromateus Niger (Ikan Bawal Hitam)
-Rastrelliger Kanagurta (Ikan Kembung)
-Rastrelliger sp (Ikan Kembung Banjar)
-Scaridae (Ikan Kakatua)
-Scomber Japonicus (Ikan Salem)
-Scomberomorus Guttatus (Tenggiri Papan)
-Thunnus Alalunga (Ikan Albacore Tuna)
-Thunnus Obesus (Ikan Bigeye Tuna)
-Thunnus Tonggol (Ikan Tuna)
-Tribus Sardini (Ikan Kenyar)
-Upeneus Moluccensis (Ikan Kuniran)
+Alepes Djedaba -Ikan Selar Bulat-
+Atropus Atropos -Ikan Cipa-Cipa-
+Caranx Ignobilis -Ikan Kuwe-
+Chanos Chanos -Ikan Bandeng-
+Decapterus Macarellus -Ikan Malalugis-
+Euthynnus Affinis -Ikan Bonito Tuna-
+Katsuwonus Pelamis -Ikan Cakalang-
+Lutjanus Malabaricus -Ikan Kakap Merah-
+Parastromateus Niger -Ikan Bawal Hitam-
+Rastrelliger Kanagurta -Ikan Kembung-
+Rastrelliger sp -Ikan Kembung Banjar-
+Scaridae -Ikan Kakatua-
+Scomber Japonicus -Ikan Salem-
+Scomberomorus Guttatus -Tenggiri Papan-
+Thunnus Alalunga -Ikan Albacore Tuna-
+Thunnus Obesus -Ikan Bigeye Tuna-
+Thunnus Tonggol -Ikan Tuna-
+Tribus Sardini -Ikan Kenyar-
+Upeneus Moluccensis -Ikan Kuniran-

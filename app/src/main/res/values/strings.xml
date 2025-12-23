@@ -5,4 +5,8 @@
     <string name="permission_denied">Permission denied. Please enable camera permission in settings.</string>
     <string name="model_loading">Loading AI model…</string>
     <string name="detecting">Detecting fish…</string>
+    <string name="ready_to_scan">Point camera at fish and tap capture</string>
+    <string name="capture">Capture</string>
+    <string name="analyzing">Analyzing…</string>
+    <string name="no_fish_detected">No fish detected</string>
 </resources>

@@ -72,6 +72,10 @@ class DetectionOverlayView @JvmOverloads constructor(
         invalidate()
     }
 
+    fun clearResults() {
+        clear()
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
