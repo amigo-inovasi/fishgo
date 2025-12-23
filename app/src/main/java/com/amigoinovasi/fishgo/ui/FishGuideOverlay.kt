@@ -8,7 +8,7 @@ import com.amigoinovasi.fishgo.R
 
 /**
  * 물고기 촬영 가이드 오버레이
- * - 가로로 긴 직사각형 프레임 (3:1 비율)
+ * - 정사각형 프레임 (1:1 비율) - 모델 입력과 일치
  * - 모서리가 둥근 테두리
  * - 프레임 외부는 반투명 어둡게
  * - 가이드 텍스트 표시
@@ -20,7 +20,7 @@ class FishGuideOverlay @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     // 가이드 프레임 비율
-    private val aspectRatio = 3f / 1f  // 가로:세로 = 3:1
+    private val aspectRatio = 1f  // 가로:세로 = 1:1 (정사각형)
     private val widthPercent = 0.85f
     private val cornerRadius = 24f
 

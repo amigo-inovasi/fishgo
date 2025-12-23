@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     // 가이드 프레임 비율 (FishGuideOverlay와 동일)
     private val guideWidthPercent = 0.85f
-    private val guideAspectRatio = 3f / 1f
+    private val guideAspectRatio = 1f  // 1:1 정사각형
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -186,10 +186,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * 카메라 이미지에서 가이드 프레임 영역만 crop
+     * 카메라 이미지에서 가이드 프레임 영역만 crop (1:1 정사각형)
      */
     private fun cropGuideRegion(bitmap: Bitmap): Bitmap {
-        // 가이드 영역 계산 (화면 중앙, 3:1 비율)
+        // 가이드 영역 계산 (화면 중앙, 1:1 정사각형)
         val guideWidth = (bitmap.width * guideWidthPercent).toInt()
         val guideHeight = (guideWidth / guideAspectRatio).toInt()
         val left = (bitmap.width - guideWidth) / 2
