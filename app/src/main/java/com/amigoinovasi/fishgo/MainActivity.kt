@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -159,11 +157,11 @@ class MainActivity : AppCompatActivity() {
                 // 가이드 영역만 crop
                 val croppedBitmap = cropGuideRegion(bitmap)
 
-                // 정사각형으로 패딩
-                val paddedBitmap = padToSquare(croppedBitmap, 224)
+                // 직접 224x224로 리사이즈 (패딩 없이 - 학습 데이터와 일치)
+                val resizedBitmap = Bitmap.createScaledBitmap(croppedBitmap, 224, 224, true)
 
                 // 임시 파일로 저장
-                val imagePath = saveTempImage(paddedBitmap)
+                val imagePath = saveTempImage(resizedBitmap)
 
                 runOnUiThread {
                     showLoading(false)
@@ -206,23 +204,6 @@ class MainActivity : AppCompatActivity() {
         return Bitmap.createBitmap(bitmap, safeLeft, safeTop, safeWidth, safeHeight)
     }
 
-    /**
-     * 가로로 긴 이미지를 정사각형으로 패딩
-     * 상하에 검정색 패딩 추가
-     */
-    private fun padToSquare(bitmap: Bitmap, targetSize: Int): Bitmap {
-        val maxDim = maxOf(bitmap.width, bitmap.height)
-        val squareBitmap = Bitmap.createBitmap(maxDim, maxDim, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(squareBitmap)
-        canvas.drawColor(Color.BLACK)  // 패딩 색상
-
-        val left = (maxDim - bitmap.width) / 2f
-        val top = (maxDim - bitmap.height) / 2f
-        canvas.drawBitmap(bitmap, left, top, null)
-
-        // targetSize로 리사이즈
-        return Bitmap.createScaledBitmap(squareBitmap, targetSize, targetSize, true)
-    }
 
     /**
      * 비트맵을 임시 파일로 저장
