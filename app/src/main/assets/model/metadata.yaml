@@ -1,0 +1,40 @@
+description: Ultralytics best model trained on /Users/young/project/navigo/fishgo/app/src/main/assets/Commercial
+  Marine Fish Species/data.yaml
+author: Ultralytics
+date: '2025-12-23T17:55:17.855853'
+version: 8.3.241
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+batch: 1
+imgsz:
+- 640
+- 640
+names:
+  0: Alepes Djedaba -Ikan Selar Bulat-
+  1: Atropus Atropos -Ikan Cipa-Cipa-
+  2: Caranx Ignobilis -Ikan Kuwe-
+  3: Chanos Chanos -Ikan Bandeng-
+  4: Decapterus Macarellus -Ikan Malalugis-
+  5: Euthynnus Affinis -Ikan Bonito Tuna-
+  6: Katsuwonus Pelamis -Ikan Cakalang-
+  7: Lutjanus Malabaricus -Ikan Kakap Merah-
+  8: Parastromateus Niger -Ikan Bawal Hitam-
+  9: Rastrelliger Kanagurta -Ikan Kembung-
+  10: Rastrelliger sp -Ikan Kembung Banjar-
+  11: Scaridae -Ikan Kakatua-
+  12: Scomber Japonicus -Ikan Salem-
+  13: Scomberomorus Guttatus -Tenggiri Papan-
+  14: Thunnus Alalunga -Ikan Albacore Tuna-
+  15: Thunnus Obesus -Ikan Bigeye Tuna-
+  16: Thunnus Tonggol -Ikan Tuna-
+  17: Tribus Sardini -Ikan Kenyar-
+  18: Upeneus Moluccensis -Ikan Kuniran-
+args:
+  batch: 1
+  fraction: 1.0
+  half: false
+  int8: false
+  nms: false
+channels: 3

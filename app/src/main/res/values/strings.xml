@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FishGo</string>
+    <string name="camera_permission_required">Camera permission is required for fish detection</string>
+    <string name="permission_denied">Permission denied. Please enable camera permission in settings.</string>
+    <string name="model_loading">Loading AI model…</string>
+    <string name="detecting">Detecting fish…</string>
+</resources>
