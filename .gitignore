@@ -100,6 +100,8 @@ calibration_image_sample_data_*.npy.zip
 
 # Training datasets (too large for git, download separately)
 app/src/main/assets/Commercial Marine Fish Species/
+Commercial Marine Fish Species*/
+classification_data/
 
 # macOS
 .DS_Store

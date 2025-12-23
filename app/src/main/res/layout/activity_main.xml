@@ -18,9 +18,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Detection Overlay (Bounding Boxes) -->
-    <com.amigoinovasi.fishgo.ui.DetectionOverlayView
-        android:id="@+id/overlayView"
+    <!-- Fish Guide Overlay (가이드 프레임) -->
+    <com.amigoinovasi.fishgo.ui.FishGuideOverlay
+        android:id="@+id/guideOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@id/previewView"
@@ -28,61 +28,62 @@
         app:layout_constraintStart_toStartOf="@id/previewView"
         app:layout_constraintTop_toTopOf="@id/previewView" />
 
-    <!-- Status Text -->
+    <!-- 가이드 텍스트 (상단) -->
     <TextView
-        android:id="@+id/statusText"
+        android:id="@+id/tvGuideText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@color/overlay_background"
-        android:padding="12dp"
-        android:text="@string/ready_to_scan"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_guide_text"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/guide_text"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Detection Result -->
+    <!-- 가이드 힌트 (하단) -->
     <TextView
-        android:id="@+id/detectionCountText"
+        android:id="@+id/tvGuideHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="120dp"
-        android:background="@color/overlay_background"
-        android:padding="16dp"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp"
+        android:text="@string/guide_hint"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/btnCapture"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Fish detected: 3"
-        tools:visibility="visible" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Capture Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/captureButton"
+    <!-- 촬영 버튼 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCapture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:contentDescription="@string/capture"
-        android:src="@android:drawable/ic_menu_camera"
+        android:paddingHorizontal="32dp"
+        android:paddingVertical="12dp"
+        android:text="@string/btn_capture"
+        android:textSize="18sp"
         app:backgroundTint="@color/primary"
-        app:fabSize="normal"
-        app:tint="@color/white"
+        app:cornerRadius="24dp"
+        app:icon="@android:drawable/ic_menu_camera"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Loading indicator -->
+    <!-- 로딩 인디케이터 -->
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/captureButton"
+        app:layout_constraintBottom_toTopOf="@id/btnCapture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

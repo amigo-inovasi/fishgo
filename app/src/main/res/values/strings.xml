@@ -1,12 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FishGo</string>
-    <string name="camera_permission_required">Camera permission is required for fish detection</string>
-    <string name="permission_denied">Permission denied. Please enable camera permission in settings.</string>
-    <string name="model_loading">Loading AI model…</string>
-    <string name="detecting">Detecting fish…</string>
-    <string name="ready_to_scan">Point camera at fish and tap capture</string>
-    <string name="capture">Capture</string>
-    <string name="analyzing">Analyzing…</string>
-    <string name="no_fish_detected">No fish detected</string>
+
+    <!-- 권한 관련 -->
+    <string name="camera_permission_required">Izin kamera diperlukan untuk deteksi ikan</string>
+    <string name="permission_denied">Izin ditolak. Aktifkan izin kamera di pengaturan.</string>
+
+    <!-- 카메라 화면 (인도네시아어) -->
+    <string name="guide_text">Letakkan ikan di dalam kotak</string>
+    <string name="guide_hint">Pastikan ikan terlihat jelas</string>
+    <string name="btn_capture">Ambil Foto</string>
+    <string name="capturing">Mengambil foto…</string>
+
+    <!-- 결과 화면 (인도네시아어) -->
+    <string name="analyzing">Menganalisis…</string>
+    <string name="accuracy_label">Akurasi</string>
+    <string name="btn_retake">Foto Ulang</string>
+    <string name="btn_save">Simpan</string>
+    <string name="result_saved">Tersimpan!</string>
+    <string name="result_low_confidence_warning">Hasil tidak pasti. Coba foto ulang.</string>
+
+    <!-- 아이콘/이모지 -->
+    <string name="fish_icon">🐟</string>
+
+    <!-- 접근성 -->
+    <string name="captured_image">Gambar ikan yang diambil</string>
+
+    <!-- 에러 메시지 -->
+    <string name="error_image_load">Gagal memuat gambar</string>
+    <string name="error_classification">Gagal menganalisis</string>
+    <string name="error_model_load">Gagal memuat model</string>
+
+    <!-- 기존 (하위 호환성) -->
+    <string name="model_loading">Memuat model AI…</string>
+    <string name="detecting">Mendeteksi ikan…</string>
+    <string name="ready_to_scan">Arahkan kamera ke ikan dan tekan tombol</string>
+    <string name="capture">Ambil</string>
+    <string name="no_fish_detected">Ikan tidak terdeteksi</string>
 </resources>

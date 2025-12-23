@@ -1,8 +1,11 @@
 package com.amigoinovasi.fishgo
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,17 +16,31 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.amigoinovasi.fishgo.databinding.ActivityMainBinding
-import com.amigoinovasi.fishgo.detection.FishDetector
+import com.amigoinovasi.fishgo.ui.FishGuideOverlay
+import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/**
+ * FishGo 메인 카메라 화면
+ *
+ * Classification 방식:
+ * 1. 사용자가 물고기를 가이드 프레임 안에 맞춤
+ * 2. "촬영하기" 버튼 클릭
+ * 3. 가이드 영역만 crop하여 ResultActivity로 전달
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var cameraExecutor: ExecutorService
-    private var fishDetector: FishDetector? = null
+
     private var imageCapture: ImageCapture? = null
     private var preview: Preview? = null
+
+    // 가이드 프레임 비율 (FishGuideOverlay와 동일)
+    private val guideWidthPercent = 0.85f
+    private val guideAspectRatio = 3f / 1f
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -43,16 +60,9 @@ class MainActivity : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        // Initialize detector
-        binding.statusText.text = getString(R.string.model_loading)
-        initializeDetector()
+        setupCaptureButton()
 
-        // Setup capture button
-        binding.captureButton.setOnClickListener {
-            captureAndAnalyze()
-        }
-
-        // Check camera permission
+        // 카메라 권한 확인
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED
         ) {
@@ -62,22 +72,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initializeDetector() {
-        cameraExecutor.execute {
-            try {
-                fishDetector = FishDetector(this)
-                runOnUiThread {
-                    binding.statusText.text = getString(R.string.ready_to_scan)
-                    binding.captureButton.isEnabled = true
-                    Log.d(TAG, "Fish detector initialized successfully")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to initialize detector", e)
-                runOnUiThread {
-                    binding.statusText.text = "Model load failed: ${e.message}"
-                    binding.captureButton.isEnabled = false
-                }
-            }
+    private fun setupCaptureButton() {
+        binding.btnCapture.setOnClickListener {
+            captureAndAnalyze()
         }
     }
 
@@ -95,13 +92,13 @@ class MainActivity : AppCompatActivity() {
                     it.setSurfaceProvider(binding.previewView.surfaceProvider)
                 }
 
-            // ImageCapture for taking photos
+            // ImageCapture
             imageCapture = ImageCapture.Builder()
                 .setTargetAspectRatio(AspectRatio.RATIO_4_3)
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .build()
 
-            // Select back camera
+            // 후면 카메라 선택
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
@@ -122,105 +119,130 @@ class MainActivity : AppCompatActivity() {
 
     private fun captureAndAnalyze() {
         val imageCapture = imageCapture ?: return
-        val detector = fishDetector ?: return
 
-        // Show loading state
-        binding.captureButton.isEnabled = false
-        binding.progressBar.visibility = View.VISIBLE
-        binding.statusText.text = getString(R.string.analyzing)
-        binding.detectionCountText.visibility = View.GONE
-        binding.overlayView.clearResults()
+        // 로딩 표시
+        showLoading(true)
 
-        // Capture image from preview
-        val bitmap = binding.previewView.bitmap
-        if (bitmap != null) {
-            analyzeImage(bitmap)
+        // 프리뷰에서 비트맵 가져오기 (더 빠름)
+        val previewBitmap = binding.previewView.bitmap
+
+        if (previewBitmap != null) {
+            processAndNavigate(previewBitmap)
         } else {
-            // Fallback: use ImageCapture
+            // 폴백: ImageCapture 사용
             imageCapture.takePicture(
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageCapturedCallback() {
-                    override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                        val capturedBitmap = imageProxyToBitmap(imageProxy)
-                        imageProxy.close()
-                        if (capturedBitmap != null) {
-                            analyzeImage(capturedBitmap)
-                        } else {
-                            showError("Failed to capture image")
-                        }
+                    override fun onCaptureSuccess(image: ImageProxy) {
+                        val bitmap = image.toBitmap()
+                        image.close()
+                        processAndNavigate(bitmap)
                     }
 
                     override fun onError(exception: ImageCaptureException) {
                         Log.e(TAG, "Image capture failed", exception)
-                        showError("Capture failed: ${exception.message}")
+                        showLoading(false)
+                        Toast.makeText(
+                            this@MainActivity,
+                            getString(R.string.error_image_load),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             )
         }
     }
 
-    private fun imageProxyToBitmap(imageProxy: ImageProxy): Bitmap? {
-        return try {
-            val buffer = imageProxy.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-            android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to convert ImageProxy to Bitmap", e)
-            null
-        }
-    }
-
-    private fun analyzeImage(bitmap: Bitmap) {
+    private fun processAndNavigate(bitmap: Bitmap) {
         cameraExecutor.execute {
             try {
-                val detector = fishDetector ?: return@execute
-                val results = detector.detect(bitmap)
+                // 가이드 영역만 crop
+                val croppedBitmap = cropGuideRegion(bitmap)
+
+                // 정사각형으로 패딩
+                val paddedBitmap = padToSquare(croppedBitmap, 224)
+
+                // 임시 파일로 저장
+                val imagePath = saveTempImage(paddedBitmap)
 
                 runOnUiThread {
-                    binding.progressBar.visibility = View.GONE
-                    binding.captureButton.isEnabled = true
+                    showLoading(false)
 
-                    if (results.isNotEmpty()) {
-                        // Show detection results
-                        binding.overlayView.setResults(results, bitmap.width, bitmap.height)
-
-                        val fishCount = results.size
-                        val topResult = results.first()
-                        val confidence = (topResult.confidence * 100).toInt()
-
-                        binding.detectionCountText.text = if (fishCount == 1) {
-                            "${topResult.indonesianName} ($confidence%)"
-                        } else {
-                            "$fishCount fish detected\n${topResult.indonesianName} ($confidence%)"
-                        }
-                        binding.detectionCountText.visibility = View.VISIBLE
-                        binding.statusText.text = "Detection complete"
-                    } else {
-                        binding.statusText.text = getString(R.string.no_fish_detected)
-                        binding.detectionCountText.visibility = View.GONE
-                    }
+                    // ResultActivity로 이동
+                    val intent = Intent(this@MainActivity, ResultActivity::class.java)
+                    intent.putExtra(ResultActivity.EXTRA_IMAGE_PATH, imagePath)
+                    startActivity(intent)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Detection failed", e)
+                Log.e(TAG, "Image processing failed", e)
                 runOnUiThread {
-                    showError("Detection failed: ${e.message}")
+                    showLoading(false)
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.error_image_load),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
 
-    private fun showError(message: String) {
-        binding.progressBar.visibility = View.GONE
-        binding.captureButton.isEnabled = true
-        binding.statusText.text = message
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    /**
+     * 카메라 이미지에서 가이드 프레임 영역만 crop
+     */
+    private fun cropGuideRegion(bitmap: Bitmap): Bitmap {
+        // 가이드 영역 계산 (화면 중앙, 3:1 비율)
+        val guideWidth = (bitmap.width * guideWidthPercent).toInt()
+        val guideHeight = (guideWidth / guideAspectRatio).toInt()
+        val left = (bitmap.width - guideWidth) / 2
+        val top = (bitmap.height - guideHeight) / 2
+
+        // 경계 검사
+        val safeLeft = left.coerceAtLeast(0)
+        val safeTop = top.coerceAtLeast(0)
+        val safeWidth = guideWidth.coerceAtMost(bitmap.width - safeLeft)
+        val safeHeight = guideHeight.coerceAtMost(bitmap.height - safeTop)
+
+        return Bitmap.createBitmap(bitmap, safeLeft, safeTop, safeWidth, safeHeight)
+    }
+
+    /**
+     * 가로로 긴 이미지를 정사각형으로 패딩
+     * 상하에 검정색 패딩 추가
+     */
+    private fun padToSquare(bitmap: Bitmap, targetSize: Int): Bitmap {
+        val maxDim = maxOf(bitmap.width, bitmap.height)
+        val squareBitmap = Bitmap.createBitmap(maxDim, maxDim, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(squareBitmap)
+        canvas.drawColor(Color.BLACK)  // 패딩 색상
+
+        val left = (maxDim - bitmap.width) / 2f
+        val top = (maxDim - bitmap.height) / 2f
+        canvas.drawBitmap(bitmap, left, top, null)
+
+        // targetSize로 리사이즈
+        return Bitmap.createScaledBitmap(squareBitmap, targetSize, targetSize, true)
+    }
+
+    /**
+     * 비트맵을 임시 파일로 저장
+     */
+    private fun saveTempImage(bitmap: Bitmap): String {
+        val tempFile = File(cacheDir, "temp_fish_${System.currentTimeMillis()}.jpg")
+        FileOutputStream(tempFile).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, out)
+        }
+        return tempFile.absolutePath
+    }
+
+    private fun showLoading(show: Boolean) {
+        binding.progressLoading.visibility = if (show) View.VISIBLE else View.GONE
+        binding.btnCapture.isEnabled = !show
     }
 
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
-        fishDetector?.close()
     }
 
     companion object {

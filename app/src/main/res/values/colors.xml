@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 브랜드 색상 -->
     <color name="primary">#B71C1C</color>
     <color name="primary_dark">#7F0000</color>
     <color name="primary_light">#E53935</color>
     <color name="accent">#FF6F00</color>
+
+    <!-- 기본 색상 -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+
+    <!-- 배경 색상 -->
+    <color name="background_dark">#121212</color>
+    <color name="card_background">#1E1E1E</color>
+    <color name="overlay_background">#80000000</color>
+
+    <!-- 텍스트 색상 -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3FFFFFF</color>
+
+    <!-- 신뢰도 색상 -->
+    <color name="confidence_high">#4CAF50</color>
+    <color name="confidence_medium">#FF9800</color>
+    <color name="confidence_low">#F44336</color>
+    <color name="warning">#FF9800</color>
+
+    <!-- 프로그레스 바 -->
+    <color name="progress_track">#333333</color>
+
+    <!-- Detection (기존 호환성) -->
     <color name="detection_box">#4CAF50</color>
     <color name="detection_text">#FFFFFF</color>
-    <color name="overlay_background">#80000000</color>
 </resources>
