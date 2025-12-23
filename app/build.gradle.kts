@@ -65,5 +65,4 @@ dependencies {
     // TensorFlow Lite - Core Interpreter for YOLOv8
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.support)
-    implementation(libs.tensorflow.lite.gpu)
 }

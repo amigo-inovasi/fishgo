@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.RectF
 import android.util.Log
 import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.gpu.CompatibilityList
-import org.tensorflow.lite.gpu.GpuDelegate
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -22,7 +20,6 @@ class FishDetector(context: Context) {
     private val interpreter: Interpreter
     private val labels: List<String>
     private val indonesianNames: Map<String, String>
-    private var gpuDelegate: GpuDelegate? = null
 
     // YOLOv8 model expects 640x640 input
     private val inputSize = INPUT_SIZE
@@ -61,21 +58,9 @@ class FishDetector(context: Context) {
 
         // Load model and create interpreter
         val model = loadModelFile(context)
-        val options = Interpreter.Options()
-
-        // Try GPU delegate
-        val compatList = CompatibilityList()
-        if (compatList.isDelegateSupportedOnThisDevice) {
-            try {
-                gpuDelegate = GpuDelegate(compatList.bestOptionsForThisDevice)
-                options.addDelegate(gpuDelegate)
-                Log.d(TAG, "GPU delegate enabled")
-            } catch (e: Exception) {
-                Log.w(TAG, "GPU delegate failed, using CPU", e)
-            }
+        val options = Interpreter.Options().apply {
+            setNumThreads(4)
         }
-
-        options.setNumThreads(4)
         interpreter = Interpreter(model, options)
 
         Log.d(TAG, "FishDetector initialized with ${labels.size} classes")
@@ -281,7 +266,6 @@ class FishDetector(context: Context) {
 
     fun close() {
         interpreter.close()
-        gpuDelegate?.close()
     }
 
     companion object {
