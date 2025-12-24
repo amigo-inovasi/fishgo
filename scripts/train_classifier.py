@@ -72,33 +72,70 @@ def create_model(num_classes: int = 19, pretrained: bool = True):
     return model
 
 
-# 물고기 이미지 특화 Augmentation
-def get_transforms():
+# 강화된 Data Augmentation (도메인 일반화 향상)
+def get_transforms(strong_augment: bool = True):
     """
     학습/검증 transforms 반환
 
-    물고기 이미지 특화 augmentation:
-    - 좌우 반전만 (상하 반전은 비현실적)
-    - ±15° 회전 (±45°보다 현실적)
-    - 조명 변화 (brightness, contrast)
+    강화된 augmentation (도메인 갭 해소):
+    - 다양한 조명/색상 변화 (다른 카메라 시뮬레이션)
+    - GaussianBlur (카메라 품질 차이)
+    - RandomGrayscale (색상 의존도 감소)
+    - RandomErasing (부분 가림 대응)
+    - RandomAffine (다양한 각도/스케일)
     """
-    train_transforms = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.RandomCrop(224),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(15),  # ±15° (현실적)
-        transforms.ColorJitter(
-            brightness=0.3,
-            contrast=0.3,
-            saturation=0.2,
-            hue=0.1
-        ),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]
-        )
-    ])
+    if strong_augment:
+        train_transforms = transforms.Compose([
+            transforms.Resize((256, 256)),
+            transforms.RandomCrop(224),
+            transforms.RandomHorizontalFlip(p=0.5),
+            # 기하학적 변환
+            transforms.RandomAffine(
+                degrees=20,           # ±20° 회전
+                translate=(0.1, 0.1), # 10% 이동
+                scale=(0.9, 1.1),     # 90~110% 스케일
+                shear=10              # ±10° 전단
+            ),
+            # 색상 변환 (강화)
+            transforms.ColorJitter(
+                brightness=0.4,       # 더 강한 밝기 변화
+                contrast=0.4,
+                saturation=0.3,
+                hue=0.15
+            ),
+            # 블러 (다양한 카메라 품질 시뮬레이션)
+            transforms.RandomApply([
+                transforms.GaussianBlur(kernel_size=5, sigma=(0.1, 2.0))
+            ], p=0.3),
+            # 그레이스케일 (색상에만 의존하지 않도록)
+            transforms.RandomGrayscale(p=0.1),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            ),
+            # Random Erasing (부분 가림 대응)
+            transforms.RandomErasing(p=0.2, scale=(0.02, 0.15))
+        ])
+    else:
+        # 기본 augmentation (이전 버전)
+        train_transforms = transforms.Compose([
+            transforms.Resize((256, 256)),
+            transforms.RandomCrop(224),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(15),
+            transforms.ColorJitter(
+                brightness=0.3,
+                contrast=0.3,
+                saturation=0.2,
+                hue=0.1
+            ),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+            )
+        ])
 
     val_transforms = transforms.Compose([
         transforms.Resize((224, 224)),
